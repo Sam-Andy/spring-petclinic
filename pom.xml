@@ -15,8 +15,7 @@
   <name>petclinic</name>
 
   <properties>
-    <sonar.organization>sam-andy</sonar.organization>
-    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
     <!-- Generic properties -->
     <java.version>1.8</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,9 +26,14 @@
     <webjars-jquery-ui.version>1.11.4</webjars-jquery-ui.version>
     <webjars-jquery.version>2.2.4</webjars-jquery.version>
     <wro4j.version>1.8.0</wro4j.version>
+    <jacoco.version>0.8.7</jacoco.version>
+    <sonar.organization>roanbrasil</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
-    <jacoco.version>0.8.2</jacoco.version>
-
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>    
+    <sonar.language>java</sonar.language>    
+    <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
   </properties>
 
   <dependencies>
@@ -135,23 +139,38 @@
         </executions>
       </plugin>
       <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.0.0-M9</version>
+          <configuration>
+            <useSystemClassLoader>false</useSystemClassLoader>
+            <argLine>@{argLine} -Xmx1024m</argLine>
+          </configuration>
+      </plugin>
+        
+      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${jacoco.version}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>report</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>report</goal>
-            </goals>
-          </execution>
-        </executions>
+      <executions>    
+        <execution>
+          <id>prepare-agent</id>
+          <goals>
+            <goal>prepare-agent</goal>
+          </goals>
+        </execution>
+        <execution>
+          <id>report</id>
+          <goals>
+            <goal>report</goal>
+          </goals>
+          <configuration>
+            <formats>
+              <format>XML</format>
+            </formats>
+          </configuration>
+        </execution>
+      </executions>
       </plugin>
 
       <!-- Spring Boot Actuator displays build-related information if a git.properties
